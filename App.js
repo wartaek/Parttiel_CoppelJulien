@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
-import { Filter } from "./components/Filter";
+
 export default function App() {
   const [liste, setListe] = useState([
     {
@@ -126,8 +126,8 @@ export default function App() {
   //----------------------------Filtre Checkbox-------------------------------------------//
   const [triCroissant, setTriCroissant] = useState(false);
   const [triDecroissant, setTriDecroissant] = useState(false);
-console.log(triCroissant);
-console.log(triDecroissant);
+// console.log(triCroissant);
+// console.log(triDecroissant);
   function MyCheckbox() {
     const [checked, setChecked] = useState(false);
     return (
@@ -146,7 +146,6 @@ console.log(triDecroissant);
 
   return (
     <View style={styles.background}>
-      <ScrollView>
         {/*------------------------------- Section pour ajouter image de fond d'ecran -------------------------------*/}
         <Image
           source={{
@@ -200,12 +199,12 @@ console.log(triDecroissant);
                   !selectedCategorie || item.catégorie === selectedCategorie
               )
               .map((item, index) => (
-                <View style={styles.mapping} key={item.id}>
-                  <Text>
+                <View style={styles.itemContainer} key={item.id}>
+                  <Text style={styles.itemPrice}>
                     {item.name} | {item.price}
                     <Button title="X" onPress={() => removeJeu(index)} />
                   </Text>
-                  <Text>#{item.catégorie}</Text>
+                  <Text style={styles.itemCategory}>#{item.catégorie}</Text>
                 </View>
               ))}
           </ScrollView>
@@ -213,7 +212,6 @@ console.log(triDecroissant);
 
         {/*------------------------------- Section pour ajouter un jeu -------------------------------*/}
         <Button title="Ajouter un jeu" onPress={() => openModal()} />
-      </ScrollView>
       {/*------------------------------- Section pour ajouter un jeu via Modal-------------------------------*/}
       <Modal
         animationType="slide"
@@ -276,7 +274,6 @@ const styles = StyleSheet.create({
     marginTop: 50,
     marginRight: 50,
     marginLeft: 50,
-    backgroundColor: "white",
     borderRadius: 5,
     marginBottom: 50,
   },
@@ -374,4 +371,29 @@ const styles = StyleSheet.create({
     fontWeight: 200,
     fontSize: 15,
   },
+  itemContainer: {
+    backgroundColor: '#ffffff',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 8,
+    shadowColor: '#000000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 20,
+},
+itemTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+},
+
+itemPrice: {
+    fontSize: 14,
+    color: '#888888',
+    marginBottom: 5,
+},
+itemCategory: {
+    fontSize: 14,
+    color: '#555555',
+}
 });
