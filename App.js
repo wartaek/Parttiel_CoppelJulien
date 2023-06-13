@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
-
+import { Filter } from "./components/Filter";
 export default function App() {
   const [liste, setListe] = useState([
     {
@@ -119,8 +119,15 @@ export default function App() {
     setModalVisible(!modalVisible);
   };
 
-  //-----------------------------------------------------------------------------------------//
+  //----------------------------Filter categorie-----------------------------------//
   const [selectedCategorie, setCategorie] = useState("");
+  if (selectedCategorie) {
+  }
+  //----------------------------Filtre Checkbox-------------------------------------------//
+  const [triCroissant, setTriCroissant] = useState(false);
+  const [triDecroissant, setTriDecroissant] = useState(false);
+console.log(triCroissant);
+console.log(triDecroissant);
   function MyCheckbox() {
     const [checked, setChecked] = useState(false);
     return (
@@ -131,8 +138,6 @@ export default function App() {
         {checked && <Ionicons name="checkmark" size={24} color="white" />}
       </Pressable>
     );
-  }
-  if (selectedCategorie) {
   }
 
   // if (!jeux) {
@@ -171,29 +176,41 @@ export default function App() {
             ))}
           </Picker>
         </View>
-          <View style={styles.filtre}>
-          <Text style={styles.text}>Trier par prix:   </Text>
-            <View style={styles.checkboxContainer}>
-              <Text>Croissant: </Text>
-              <MyCheckbox />
-              <Text>   Decroissant: </Text>
-              <MyCheckbox />
-            </View>
+        <View style={styles.filtre}>
+          <Text style={styles.text}>Trier par prix: </Text>
+          <View style={styles.checkboxContainer}>
+            <Text>Croissant: </Text>
+            <MyCheckbox
+              checked={triCroissant}
+              onChange={(value) => setTriCroissant(value)}
+            />
+            <Text> Decroissant: </Text>
+            <MyCheckbox
+              checked={triDecroissant}
+              onChange={(value) => setTriDecroissant(value)}
+            />
           </View>
+        </View>
         {/*------------------------------- Section pour voir la liste des jeux -------------------------------*/}
         <View style={styles.container}>
           <ScrollView>
-            {liste.map((item, index) => (
-              <View key={item.id}>
-                <Text>
-                  {item.name}|{item.price}
-                  <Button title="X" onPress={() => removeJeu(index)} />
-                </Text>
-                <Text>#{item.catégorie}</Text>
-              </View>
-            ))}
+            {liste
+              .filter(
+                (item) =>
+                  !selectedCategorie || item.catégorie === selectedCategorie
+              )
+              .map((item, index) => (
+                <View style={styles.mapping} key={item.id}>
+                  <Text>
+                    {item.name} | {item.price}
+                    <Button title="X" onPress={() => removeJeu(index)} />
+                  </Text>
+                  <Text>#{item.catégorie}</Text>
+                </View>
+              ))}
           </ScrollView>
         </View>
+
         {/*------------------------------- Section pour ajouter un jeu -------------------------------*/}
         <Button title="Ajouter un jeu" onPress={() => openModal()} />
       </ScrollView>
@@ -259,11 +276,9 @@ const styles = StyleSheet.create({
     marginTop: 50,
     marginRight: 50,
     marginLeft: 50,
-    marginBottom: 50,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "white",
     borderRadius: 5,
-    height: "40%",
-    justifyContent: "center",
+    marginBottom: 50,
   },
   backgroundImage: {
     flex: 1,
