@@ -1,260 +1,171 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import {
-  Button,
-  Image,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  ActivityIndicator,
-  Pressable,
-} from "react-native";
+import { Button, Image, StyleSheet, Text, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { Ionicons } from "@expo/vector-icons";
+import MyCheckbox from "./components/MyCheckbox";
+import JeuxList from "./components/JeuxList";
+import AjoutJeuModal from "./components/AjoutJeuModal";
 
 export default function App() {
   const [liste, setListe] = useState([
     {
       name: "Medal of Honor",
-      price: "10€",
+      price: 10,
       catégorie: "FPS",
       id: 23124,
     },
     {
       name: "Street Fighter 2",
-      price: "20€",
+      price: 20,
       catégorie: "Combat",
       id: 12349,
     },
 
     {
       name: "Call of Duty",
-      price: "30€",
+      price: 30,
       catégorie: "FPS",
       id: 549762,
     },
 
     {
       name: "NBA2K5",
-      price: "5€",
+      price: 5,
       catégorie: "Sport",
       id: 549763,
     },
 
     {
       name: "God Of War 2018",
-      price: "25€",
+      price: 25,
       catégorie: "Action-Aventure",
       id: 549764,
     },
 
     {
       name: "The Legend of Zelda : The Wind Walker",
-      price: "35€",
+      price: 35,
       catégorie: "Action-Aventure",
       id: 549765,
     },
 
     {
       name: "Horizon : Forbidden West",
-      price: "40€",
+      price: 40,
       catégorie: "Action-Aventure",
       id: 549766,
     },
 
     {
       name: "Forza Horizon 5",
-      price: "45€",
+      price: 45,
       catégorie: "Voiture",
       id: 549767,
     },
 
     {
       name: "The Last Of Us",
-      price: "55€",
+      price: 55,
       catégorie: "Survival-horror",
       id: 549768,
     },
 
     {
       name: "Red Dead Redemption II",
-      price: "18€",
+      price: 18,
       catégorie: "Action-Aventure",
       id: 549769,
     },
   ]);
-  // console.log(liste);
-  const [inputNom, setInputNom] = useState("");
-  const [inputPrice, setInputPrice] = useState("");
-  const [inputCategorie, setInputCategorie] = useState("");
 
-  const [modalVisible, setModalVisible] = useState(false);
+  // Créer un ensemble pour stocker les catégories uniques
+  const categoriesSet = new Set();
 
-  const newJeu = () => {
-    const dernierId = liste[liste.length - 1]?.id;
+  // Parcourir la liste de jeux et ajouter les catégories à l'ensemble
+  liste.forEach((item) => {
+    categoriesSet.add(item.catégorie);
+  });
 
-    const nouvJeu = {
-      name: inputNom,
-      price: inputPrice,
-      catégorie: inputCategorie,
-      //id: liste[liste.length].id + 1,
-      id: dernierId + 1,
-    };
-    setListe([...liste, nouvJeu]);
-    setInputNom("");
-    setInputCategorie("");
-    setInputPrice("");
-  };
+  // Convertir l'ensemble en tableau
+  const categoriesArray = Array.from(categoriesSet);
 
-  const removeJeu = (index) => {
-    const removeJeu = [...liste];
-    removeJeu.splice(index, 1);
-    setListe(removeJeu);
-  };
-
-  const openModal = () => {
-    setModalVisible(!modalVisible);
-  };
-
-  //----------------------------Filter categorie-----------------------------------//
   const [selectedCategorie, setCategorie] = useState("");
-  if (selectedCategorie) {
-  }
-  //----------------------------Filtre Checkbox-------------------------------------------//
   const [triCroissant, setTriCroissant] = useState(false);
   const [triDecroissant, setTriDecroissant] = useState(false);
-// console.log(triCroissant);
-// console.log(triDecroissant);
-  function MyCheckbox() {
-    const [checked, setChecked] = useState(false);
-    return (
-      <Pressable
-        style={[styles.checkboxBase, checked && styles.checkboxChecked]}
-        onPress={() => setChecked(!checked)}
-      >
-        {checked && <Ionicons name="checkmark" size={24} color="white" />}
-      </Pressable>
-    );
-  }
+  const [modalVisible, setModalVisible] = useState(false);
+  console.log(triCroissant);
+  console.log(triDecroissant);
 
-  // if (!jeux) {
-  //   return <ActivityIndicator size="large" color="#0000ff" />;
-  // }
+  const handleAddJeu = (nouveauJeu) => {
+    setListe([...liste, nouveauJeu]);
+  };
+
+  const handleRemoveJeu = (index) => {
+    const newListe = [...liste];
+    newListe.splice(index, 1);
+    setListe(newListe);
+  };
+
+  const handleOpenModal = () => {
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
 
   return (
     <View style={styles.background}>
-        {/*------------------------------- Section pour ajouter image de fond d'ecran -------------------------------*/}
-        <Image
-          source={{
-            uri: "https://i.pinimg.com/originals/93/b6/ac/93b6ac1b21132ba63eb5bb1fc3b7f3fb.gif",
-          }}
-          style={styles.backgroundImage}
-        ></Image>
-        {/*------------------------------- Section entete de la page -------------------------------*/}
-        <View style={styles.entete}>
-          <Text>Julien</Text>
-          <Text>Nb Jeux Vidéo:{liste.length}</Text>
+      <Image
+        source={{
+          uri: "https://i.pinimg.com/originals/93/b6/ac/93b6ac1b21132ba63eb5bb1fc3b7f3fb.gif",
+        }}
+        style={styles.backgroundImage}
+      />
+      <View style={styles.entete}>
+        <Text>Julien</Text>
+        <Text>Nb Jeux Vidéo: {liste.length}</Text>
+      </View>
+      <View style={styles.entete}>
+        <Text style={styles.text}>Filtre par :</Text>
+        <Picker
+          style={styles.picker}
+          selectedValue={selectedCategorie}
+          onValueChange={(itemValue) => setCategorie(itemValue)}
+        >
+          {categoriesArray.map((category) => (
+            <Picker.Item key={category} label={category} value={category} />
+          ))}
+        </Picker>
+      </View>
+      <View style={styles.filtre}>
+        <Text style={styles.text}>Trier par prix: </Text>
+        <View style={styles.checkboxContainer}>
+          <Text>Croissant: </Text>
+          <MyCheckbox
+            checked={triCroissant}
+            onChange={(value) => setTriCroissant(value)}
+          />
+          <Text> Decroissant: </Text>
+          <MyCheckbox
+            checked={triDecroissant}
+            onChange={(value) => setTriDecroissant(value)}
+          />
         </View>
-        {/*------------------------------- Section pour filtrer les jeux -------------------------------*/}
-        <View style={styles.entete}>
-          <Text style={styles.text}>Filtre par :</Text>
-          <Picker
-            style={styles.picker}
-            selectedValue={selectedCategorie}
-            onValueChange={(itemValue) => setCategorie(itemValue)}
-          >
-            {liste.map((item) => (
-              <Picker.Item
-                key={item.id}
-                label={item.catégorie}
-                value={item.catégorie}
-              />
-            ))}
-          </Picker>
-        </View>
-        <View style={styles.filtre}>
-          <Text style={styles.text}>Trier par prix: </Text>
-          <View style={styles.checkboxContainer}>
-            <Text>Croissant: </Text>
-            <MyCheckbox
-              checked={triCroissant}
-              onChange={(value) => setTriCroissant(value)}
-            />
-            <Text> Decroissant: </Text>
-            <MyCheckbox
-              checked={triDecroissant}
-              onChange={(value) => setTriDecroissant(value)}
-            />
-          </View>
-        </View>
-        {/*------------------------------- Section pour voir la liste des jeux -------------------------------*/}
-        <View style={styles.container}>
-          <ScrollView>
-            {liste
-              .filter(
-                (item) =>
-                  !selectedCategorie || item.catégorie === selectedCategorie
-              )
-              .map((item, index) => (
-                <View style={styles.itemContainer} key={item.id}>
-                  <Text style={styles.itemPrice}>
-                    {item.name} | {item.price}
-                    <Button title="X" onPress={() => removeJeu(index)} />
-                  </Text>
-                  <Text style={styles.itemCategory}>#{item.catégorie}</Text>
-                </View>
-              ))}
-          </ScrollView>
-        </View>
-
-        {/*------------------------------- Section pour ajouter un jeu -------------------------------*/}
-        <Button title="Ajouter un jeu" onPress={() => openModal()} />
-      {/*------------------------------- Section pour ajouter un jeu via Modal-------------------------------*/}
-      <Modal
-        animationType="slide"
-        transparent={true}
+      </View>
+      <JeuxList
+        jeux={liste}
+        selectedCategorie={selectedCategorie}
+        triCroissant={triCroissant}
+        triDecroissant={triDecroissant}
+        onRemoveJeu={handleRemoveJeu}
+      />
+      <Button title="Ajouter un jeu" onPress={handleOpenModal} />
+      <AjoutJeuModal
         visible={modalVisible}
-        style={styles.modal}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View /*style={{ flexDirection: "row" }}*/>
-              <TextInput
-                style={styles.input}
-                placeholder="Saisir Nom"
-                onChangeText={(text) => setInputNom(text)}
-                value={inputNom}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Saisir Prix"
-                onChangeText={(text) => setInputPrice(text)}
-                value={inputPrice}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Saisir Categorie"
-                onChangeText={(text) => setInputCategorie(text)}
-                value={inputCategorie}
-              />
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-around",
-                }}
-              >
-                <Button title="Add" onPress={() => newJeu()} />
-                <Button title="Fermer" onPress={() => openModal()} />
-              </View>
-            </View>
-          </View>
-        </View>
-      </Modal>
+        onAddJeu={handleAddJeu}
+        onCloseModal={handleCloseModal}
+      />
       <StatusBar style="auto" />
     </View>
   );
@@ -267,15 +178,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
     height: "100%",
-  },
-  container: {
-    flex: 1,
-    alignItems: "center",
-    marginTop: 50,
-    marginRight: 50,
-    marginLeft: 50,
-    borderRadius: 5,
-    marginBottom: 50,
   },
   backgroundImage: {
     flex: 1,
@@ -294,7 +196,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 5,
     marginTop: 50,
-    marginBottom: 10,
+    marginBottom: -30,
     backgroundColor: "#f2f2f2",
     padding: 20,
   },
@@ -306,7 +208,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 5,
-    marginBottom: -10,
+    marginBottom: 10,
     backgroundColor: "#f2f2f2",
     padding: 20,
   },
@@ -323,77 +225,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     width: 150,
   },
-  modalView: {
-    marginTop: "50%",
-    height: 200,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  checkboxBase: {
-    width: 24,
-    height: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: "coral",
-    backgroundColor: "transparent",
-  },
-  checkboxChecked: {
-    backgroundColor: "coral",
-  },
-  appContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  appTitle: {
-    marginVertical: 16,
-    fontWeight: "bold",
-    fontSize: 24,
-  },
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
-  checkboxLabel: {
-    marginLeft: 8,
-    fontWeight: 200,
-    fontSize: 15,
-  },
-  itemContainer: {
-    backgroundColor: '#ffffff',
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 8,
-    shadowColor: '#000000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 20,
-},
-itemTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-},
-
-itemPrice: {
-    fontSize: 14,
-    color: '#888888',
-    marginBottom: 5,
-},
-itemCategory: {
-    fontSize: 14,
-    color: '#555555',
-}
 });
